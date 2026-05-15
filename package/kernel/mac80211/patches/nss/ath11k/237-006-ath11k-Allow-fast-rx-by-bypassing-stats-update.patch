@@ -21,7 +21,7 @@ Signed-off-by: P Praneesh <ppranees@codeaurora.org>
 
 --- a/drivers/net/wireless/ath/ath11k/core.h
 +++ b/drivers/net/wireless/ath/ath11k/core.h
-@@ -149,6 +149,7 @@ struct ath11k_skb_rxcb {
+@@ -152,6 +152,7 @@ struct ath11k_skb_rxcb {
  	u8 tid;
  	u16 peer_id;
  	u16 seq_no;
@@ -29,7 +29,7 @@ Signed-off-by: P Praneesh <ppranees@codeaurora.org>
  };
  
  enum ath11k_hw_rev {
-@@ -1140,6 +1141,7 @@ struct ath11k_base {
+@@ -1163,6 +1164,7 @@ struct ath11k_base {
  	u32 max_ast_index;
  	u32 num_ast_entries;
  
@@ -39,7 +39,7 @@ Signed-off-by: P Praneesh <ppranees@codeaurora.org>
  };
 --- a/drivers/net/wireless/ath/ath11k/debugfs.c
 +++ b/drivers/net/wireless/ath/ath11k/debugfs.c
-@@ -974,6 +974,79 @@ static const struct file_operations fops
+@@ -854,6 +854,79 @@ static const struct file_operations fops
  	.llseek = default_llseek,
  };
  
@@ -119,7 +119,7 @@ Signed-off-by: P Praneesh <ppranees@codeaurora.org>
  int ath11k_debugfs_pdev_create(struct ath11k_base *ab)
  {
  	if (test_bit(ATH11K_FLAG_REGISTERED, &ab->dev_flags))
-@@ -1023,6 +1096,8 @@ int ath11k_debugfs_soc_create(struct ath
+@@ -903,6 +976,8 @@ int ath11k_debugfs_soc_create(struct ath
  		ret = PTR_ERR(ab->debugfs_soc);
  		goto out;
  	}
@@ -143,7 +143,7 @@ Signed-off-by: P Praneesh <ppranees@codeaurora.org>
  /* Returns number of Rx buffers replenished */
  int ath11k_dp_rxbufs_replenish(struct ath11k_base *ab, int mac_id,
  			       struct dp_rxdma_ring *rx_ring,
-@@ -1656,7 +1662,7 @@ int ath11k_dp_htt_tlv_iter(struct ath11k
+@@ -1655,7 +1661,7 @@ int ath11k_dp_htt_tlv_iter(struct ath11k
  		len -= sizeof(*tlv);
  
  		if (tlv_len > len) {
@@ -152,7 +152,7 @@ Signed-off-by: P Praneesh <ppranees@codeaurora.org>
  				   tlv_tag, ptr - begin, len, tlv_len);
  			return -EINVAL;
  		}
-@@ -2445,10 +2451,60 @@ ath11k_dp_rx_h_find_peer(struct ath11k_b
+@@ -2444,10 +2450,60 @@ ath11k_dp_rx_h_find_peer(struct ath11k_b
  	return peer;
  }
  
@@ -214,7 +214,7 @@ Signed-off-by: P Praneesh <ppranees@codeaurora.org>
  {
  	bool  fill_crypto_hdr;
  	enum hal_encrypt_type enctype;
-@@ -2459,9 +2515,13 @@ static void ath11k_dp_rx_h_mpdu(struct a
+@@ -2458,9 +2514,13 @@ static void ath11k_dp_rx_h_mpdu(struct a
  	struct rx_attention *rx_attention;
  	u32 err_bitmap;
  
@@ -229,7 +229,7 @@ Signed-off-by: P Praneesh <ppranees@codeaurora.org>
  	rxcb->is_mcbc = fill_crypto_hdr;
  
  	if (rxcb->is_mcbc) {
-@@ -2472,6 +2532,26 @@ static void ath11k_dp_rx_h_mpdu(struct a
+@@ -2471,6 +2531,26 @@ static void ath11k_dp_rx_h_mpdu(struct a
  	spin_lock_bh(&ar->ab->base_lock);
  	peer = ath11k_dp_rx_h_find_peer(ar->ab, msdu);
  	if (peer) {
@@ -256,7 +256,7 @@ Signed-off-by: P Praneesh <ppranees@codeaurora.org>
  		if (rxcb->is_mcbc)
  			enctype = peer->sec_type_grp;
  		else
-@@ -2481,6 +2561,8 @@ static void ath11k_dp_rx_h_mpdu(struct a
+@@ -2480,6 +2560,8 @@ static void ath11k_dp_rx_h_mpdu(struct a
  	}
  	spin_unlock_bh(&ar->ab->base_lock);
  
@@ -265,7 +265,7 @@ Signed-off-by: P Praneesh <ppranees@codeaurora.org>
  	rx_attention = ath11k_dp_rx_get_attention(ar->ab, rx_desc);
  	err_bitmap = ath11k_dp_rx_h_attn_mpdu_err(rx_attention);
  	if (enctype != HAL_ENCRYPT_TYPE_OPEN && !err_bitmap)
-@@ -2722,7 +2804,8 @@ static void ath11k_dp_rx_deliver_msdu(st
+@@ -2721,7 +2803,8 @@ static void ath11k_dp_rx_deliver_msdu(st
  static int ath11k_dp_rx_process_msdu(struct ath11k *ar,
  				     struct sk_buff *msdu,
  				     struct sk_buff_head *msdu_list,
@@ -275,7 +275,7 @@ Signed-off-by: P Praneesh <ppranees@codeaurora.org>
  {
  	struct ath11k_base *ab = ar->ab;
  	struct hal_rx_desc *rx_desc, *lrx_desc;
-@@ -2789,8 +2872,13 @@ static int ath11k_dp_rx_process_msdu(str
+@@ -2788,8 +2871,13 @@ static int ath11k_dp_rx_process_msdu(str
  		}
  	}
  
@@ -290,20 +290,20 @@ Signed-off-by: P Praneesh <ppranees@codeaurora.org>
  
  	rx_status->flag |= RX_FLAG_SKIP_MONITOR | RX_FLAG_DUP_VALIDATED;
  
-@@ -2805,10 +2893,12 @@ static void ath11k_dp_rx_process_receive
+@@ -2804,10 +2892,12 @@ static void ath11k_dp_rx_process_receive
  						  struct sk_buff_head *msdu_list,
  						  int mac_id)
  {
 +	struct ath11k_skb_rxcb *rxcb;
  	struct sk_buff *msdu;
  	struct ath11k *ar;
- 	struct ieee80211_rx_status rx_status = {0};
+ 	struct ieee80211_rx_status rx_status = {};
  	int ret;
 +	bool fast_rx;
  
  	if (skb_queue_empty(msdu_list))
  		return;
-@@ -2825,7 +2915,12 @@ static void ath11k_dp_rx_process_receive
+@@ -2824,7 +2914,12 @@ static void ath11k_dp_rx_process_receive
  	}
  
  	while ((msdu = __skb_dequeue(msdu_list))) {
@@ -317,7 +317,7 @@ Signed-off-by: P Praneesh <ppranees@codeaurora.org>
  		if (unlikely(ret)) {
  			ath11k_dbg(ab, ATH11K_DBG_DATA,
  				   "Unable to process msdu %d", ret);
-@@ -2833,7 +2928,10 @@ static void ath11k_dp_rx_process_receive
+@@ -2832,7 +2927,10 @@ static void ath11k_dp_rx_process_receive
  			continue;
  		}
  
@@ -329,7 +329,7 @@ Signed-off-by: P Praneesh <ppranees@codeaurora.org>
  	}
  }
  
-@@ -2842,11 +2940,12 @@ void ath11k_dp_rx_from_nss(struct ath11k
+@@ -2841,11 +2939,12 @@ void ath11k_dp_rx_from_nss(struct ath11k
  {
  	struct ieee80211_rx_status rx_status = {0};
  	struct ath11k_skb_rxcb *rxcb;
@@ -439,7 +439,7 @@ Signed-off-by: P Praneesh <ppranees@codeaurora.org>
  	.rx_desc_get_mpdu_fc_valid = ath11k_hw_qcn9074_rx_desc_get_mpdu_fc_valid,
 --- a/drivers/net/wireless/ath/ath11k/hw.h
 +++ b/drivers/net/wireless/ath/ath11k/hw.h
-@@ -268,6 +268,7 @@ struct ath11k_hw_ops {
+@@ -267,6 +267,7 @@ struct ath11k_hw_ops {
  	u32 (*rx_desc_get_encrypt_type)(struct hal_rx_desc *desc);
  	u8 (*rx_desc_get_decap_type)(struct hal_rx_desc *desc);
  	u8 (*rx_desc_get_mesh_ctl)(struct hal_rx_desc *desc);
@@ -449,7 +449,7 @@ Signed-off-by: P Praneesh <ppranees@codeaurora.org>
  	bool (*rx_desc_get_mpdu_fc_valid)(struct hal_rx_desc *desc);
 --- a/drivers/net/wireless/ath/ath11k/mac.c
 +++ b/drivers/net/wireless/ath/ath11k/mac.c
-@@ -10256,6 +10256,14 @@ static int ath11k_mac_op_sta_state(struc
+@@ -10461,6 +10461,14 @@ static int ath11k_mac_op_sta_state(struc
  		}
  	} else if (old_state == IEEE80211_STA_AUTHORIZED &&
  		   new_state == IEEE80211_STA_ASSOC) {

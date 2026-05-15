@@ -9,9 +9,9 @@ PKG_RELEASE:=1
 
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_URL:=https://github.com/rockchip-linux/rkbin.git
-PKG_SOURCE_DATE:=2024-02-22
-PKG_SOURCE_VERSION:=a2a0b89b6c8c612dca5ed9ed8a68db8a07f68bc0
-PKG_MIRROR_HASH:=39f15e5f8fac02026065b6747b355b93f4e06202783ae448c43607763211597c
+PKG_SOURCE_DATE:=2025-06-13
+PKG_SOURCE_VERSION:=74213af1e952c4683d2e35952507133b61394862
+PKG_MIRROR_HASH:=4b801b1301ae297f660340617b5f398b23a3f0b43bc7f0ef42c21f0f43eb8990
 
 PKG_MAINTAINER:=Tianling Shen <cnsztl@immortalwrt.org>
 
@@ -30,10 +30,9 @@ define Trusted-Firmware-A/rk3308
   TPL:=rk33/$(RK3308_TPL)
 endef
 
-define Trusted-Firmware-A/rk3308-rock-pi-s
+define Trusted-Firmware-A/rk3308-tpl-rock-pi-s
   NAME:=Radxa ROCK Pi S board
   BUILD_SUBTARGET:=armv8
-  ATF:=rk33/$(RK3308_ATF)
   TPL:=rk33/$(RK3308_TPL_ROCK_PI_S)
 endef
 
@@ -51,6 +50,12 @@ define Trusted-Firmware-A/rk3399
   LOADER:=rk33/$(RK3399_LOADER)
 endef
 
+define Trusted-Firmware-A/rk3528
+  BUILD_SUBTARGET:=armv8
+  ATF:=rk35/$(RK3528_ATF)
+  TPL:=rk35/$(RK3528_TPL)
+endef
+
 define Trusted-Firmware-A/rk3566
   BUILD_SUBTARGET:=armv8
   ATF:=rk35/$(RK3566_ATF)
@@ -63,11 +68,16 @@ define Trusted-Firmware-A/rk3568
   TPL:=rk35/$(RK3568_TPL)
 endef
 
-define Trusted-Firmware-A/rk3568-e25
+define Trusted-Firmware-A/rk3568-tpl-e25
   NAME:=Radxa E25 board
   BUILD_SUBTARGET:=armv8
-  ATF:=rk35/$(RK3568_ATF)
   TPL:=rk35/$(RK3568_TPL_E25)
+endef
+
+define Trusted-Firmware-A/rk3576
+  BUILD_SUBTARGET:=armv8
+  ATF:=rk35/$(RK3576_ATF)
+  TPL:=rk35/$(RK3576_TPL)
 endef
 
 define Trusted-Firmware-A/rk3588
@@ -78,41 +88,45 @@ endef
 
 TFA_TARGETS:= \
 	rk3308 \
-	rk3308-rock-pi-s \
+	rk3308-tpl-rock-pi-s \
 	rk3328 \
 	rk3399 \
+	rk3528 \
 	rk3566 \
 	rk3568 \
-	rk3568-e25 \
+	rk3568-tpl-e25 \
+	rk3576 \
 	rk3588
 
-ifeq ($(BUILD_VARIANT),rk3308-rock-pi-s)
+ifeq ($(BUILD_VARIANT),rk3308-tpl-rock-pi-s)
   define Download/rk3308-tpl-rock-pi-s
-    FILE:=$(RK3308_TPL_ROCK_PI_S)
-    URL:=https://github.com/radxa/rkbin/raw/5696fab20dcac57c1458f72dc7604ba60e553adf/bin/rk33/
-    HASH:=8a1a42df23cccb86a2dabc14a5c0e9227d64a51b9b83e9968ef5af3b30787f7d
+    FILE:=$(notdir $(TPL))
+    URL_FILE:=$(TPL)
+    URL:=https://github.com/radxa/rkbin/raw/2b54df9d062ef91a9fffbc85472b070c9220c4cf/bin/
+    HASH:=45af030ed2cb322cc5a91c32350130fc1f1ea9508794fa4b5d309eadf70e3d04
   endef
 
   define Build/Prepare
 	$(eval $(call Download,rk3308-tpl-rock-pi-s))
 	$(call Build/Prepare/Default)
 
-	$(CP) $(DL_DIR)/$(RK3308_TPL_ROCK_PI_S) $(PKG_BUILD_DIR)/bin/rk33/
+	$(CP) $(DL_DIR)/$(notdir $(TPL)) $(PKG_BUILD_DIR)/bin/$(TPL)
   endef
 endif
 
-ifeq ($(BUILD_VARIANT),rk3568-e25)
+ifeq ($(BUILD_VARIANT),rk3568-tpl-e25)
   define Download/rk3568-tpl-e25
-    FILE:=$(RK3568_TPL_E25)
-    URL:=https://github.com/radxa/rkbin/raw/5696fab20dcac57c1458f72dc7604ba60e553adf/bin/rk35/
-    HASH:=1815f9649dc5661a3ef184b052da39286e51453a66f6ff53cc3e345d65dfabd4
+    FILE:=$(notdir $(TPL))
+    URL_FILE:=$(TPL)
+    URL:=https://github.com/radxa/rkbin/raw/2e77c53ab0279585b09ecdaa54fe3e2bf80f9475/bin/
+    HASH:=1bb9f92a6515a70b91c0f8bd3aa4dc31432afc4317b9408f82c43ca63cb10ab6
   endef
 
   define Build/Prepare
 	$(eval $(call Download,rk3568-tpl-e25))
 	$(call Build/Prepare/Default)
 
-	$(CP) $(DL_DIR)/$(RK3568_TPL_E25) $(PKG_BUILD_DIR)/bin/rk35/
+	$(CP) $(DL_DIR)/$(notdir $(TPL)) $(PKG_BUILD_DIR)/bin/$(TPL)
   endef
 endif
 
@@ -135,7 +149,9 @@ endef
 define Package/trusted-firmware-a/install
 	$(INSTALL_DIR) $(STAGING_DIR_IMAGE)
 
+ifneq ($(ATF),)
 	$(CP) $(PKG_BUILD_DIR)/bin/$(ATF) $(STAGING_DIR_IMAGE)/
+endif
 ifneq ($(LOADER),)
 	$(CP) $(PKG_BUILD_DIR)/tools/loaderimage $(STAGING_DIR_IMAGE)/
 	$(CP) $(PKG_BUILD_DIR)/$(BUILD_VARIANT)-idbloader.bin $(STAGING_DIR_IMAGE)/

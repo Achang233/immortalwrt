@@ -1,0 +1,281 @@
+// SPDX-License-Identifier: GPL-2.0-or-later OR MIT
+
+/dts-v1/;
+
+#include "ipq8174-mx4x00.dtsi"
+
+/ {
+	model = "Linksys MX4300";
+	compatible = "linksys,mx4300", "qcom,ipq8074";
+
+	chosen {
+		/*
+		In the kernel command line, replace the first occurence of bootargs-find-X with bootargs-replace-X.
+		If bootargs-exact-match-X is set to "y", then replacement happens only if the kernel command line
+		is identical to bootargs-find-X.
+		*/
+		bootargs-find-1 = "ubi.mtd=22,2048";
+		bootargs-replace-1 = "ubi.mtd=22,4096";
+
+		bootargs-find-2 = "ubi.mtd=24,2048";
+		bootargs-replace-2 = "ubi.mtd=24,4096";
+	};
+
+	aliases {
+		label-mac-device = &dp2;
+	};
+};
+
+&qpic_nand {
+	status = "okay";
+
+	partitions {
+		status = "disabled";
+	};
+
+	nand@0 {
+		reg = <0>;
+
+		nand-ecc-strength = <4>;
+		nand-ecc-step-size = <512>;
+		nand-bus-width = <8>;
+
+		partitions {
+			compatible = "fixed-partitions";
+			#address-cells = <1>;
+			#size-cells = <1>;
+
+			partition@0 {
+				label = "0:sbl1";
+				reg = <0x00000000 0x00100000>;
+				read-only;
+			};
+
+			partition@100000 {
+				label = "0:mibib";
+				reg = <0x00100000 0x00100000>;
+				read-only;
+			};
+
+			partition@200000 {
+				label = "0:bootconfig";
+				reg = <0x00200000 0x00080000>;
+				read-only;
+			};
+
+			partition@280000 {
+				label = "0:bootconfig1";
+				reg = <0x00280000 0x00080000>;
+				read-only;
+			};
+
+			partition@300000 {
+				label = "0:qsee";
+				reg = <0x00300000 0x00300000>;
+				read-only;
+			};
+
+			partition@600000 {
+				label = "0:qsee_1";
+				reg = <0x00600000 0x00300000>;
+				read-only;
+			};
+
+			partition@900000 {
+				label = "0:devcfg";
+				reg = <0x00900000 0x00080000>;
+				read-only;
+			};
+
+			partition@980000 {
+				label = "0:devcfg_1";
+				reg = <0x00980000 0x00080000>;
+				read-only;
+			};
+
+			partition@a00000 {
+				label = "0:apdp";
+				reg = <0x00a00000 0x00080000>;
+				read-only;
+			};
+
+			partition@a80000 {
+				label = "0:apdp_1";
+				reg = <0x00a80000 0x00080000>;
+				read-only;
+			};
+
+			partition@b00000 {
+				label = "0:rpm";
+				reg = <0x00b00000 0x00080000>;
+				read-only;
+			};
+
+			partition@b80000 {
+				label = "0:rpm_1";
+				reg = <0x00b80000 0x00080000>;
+				read-only;
+			};
+
+			partition@c00000 {
+				label = "0:cdt";
+				reg = <0x00c00000 0x00080000>;
+				read-only;
+			};
+
+			partition@c80000 {
+				label = "0:cdt_1";
+				reg = <0x00c80000 0x00080000>;
+				read-only;
+			};
+
+			partition@d00000 {
+				label = "0:appsblenv";
+				reg = <0x00d00000 0x00080000>;
+			};
+
+			partition@d80000 {
+				label = "0:appsbl";
+				reg = <0x00d80000 0x00100000>;
+				read-only;
+			};
+
+			partition@e80000 {
+				label = "0:appsbl_1";
+				reg = <0x00e80000 0x00100000>;
+				read-only;
+			};
+
+			partition@f80000 {
+				label = "0:art";
+				reg = <0x00f80000 0x00080000>;
+				read-only;
+			};
+
+			partition@1000000 {
+				label = "u_env";
+				reg = <0x01000000 0x00100000>;
+			};
+
+			partition@1100000 {
+				label = "s_env";
+				reg = <0x01100000 0x00100000>;
+			};
+
+			partition@1200000 {
+				label = "devinfo";
+				reg = <0x01200000 0x00040000>;
+				read-only;
+
+				nvmem-layout {
+					compatible = "ascii-eq-delim-env";
+
+					hw_mac_addr: hw_mac_addr {
+						compatible = "mac-base";
+						#nvmem-cell-cells = <1>;
+					};
+				};
+			};
+
+			partition@1240000 {
+				label = "kernel";
+				reg = <0x01240000 0x0af40000>;
+			};
+
+			partition@1a40000 {
+				label = "rootfs";
+				reg = <0x01a40000 0x0a740000>;
+			};
+
+			partition@c180000 {
+				label = "alt_kernel";
+				reg = <0x0c180000 0x0af40000>;
+			};
+
+			partition@c980000 {
+				label = "alt_rootfs";
+				reg = <0x0c980000 0x0a740000>;
+			};
+
+			partition@170c0000 {
+				label = "sysdiag";
+				reg = <0x170c0000 0x00400000>;
+				read-only;
+			};
+
+			partition@174c0000 {
+				label = "0:ethphyfw";
+				reg = <0x174c0000 0x00080000>;
+				read-only;
+			};
+
+			partition@17540000 {
+				label = "syscfg";
+				reg = <0x17540000 0x079c0000>;
+				read-only;
+			};
+
+			partition@1ef00000 {
+				label = "secured_store";
+				reg = <0x1ef00000 0x00400000>;
+				read-only;
+			};
+
+			partition@1f300000 {
+				label = "0:wififw";
+				reg = <0x1f300000 0x01900000>;
+				read-only;
+			};
+
+			partition@20c00000 {
+				label = "app2_data";
+				reg = <0x20c00000 0x16180000>;
+				read-only;
+			};
+
+			partition@36d80000 {
+				label = "app2";
+				reg = <0x36d80000 0x09280000>;
+				read-only;
+			};
+		};
+	};
+};
+
+&dp2 {
+	status = "okay";
+	phy-handle = <&qca8075_1>;
+	label = "wan";
+	nvmem-cells = <&hw_mac_addr 0>;
+	nvmem-cell-names = "mac-address";
+};
+
+&dp3 {
+	status = "okay";
+	phy-handle = <&qca8075_2>;
+	label = "lan3";
+	nvmem-cells = <&hw_mac_addr 0>;
+	nvmem-cell-names = "mac-address";
+};
+
+&dp4 {
+	status = "okay";
+	phy-handle = <&qca8075_3>;
+	label = "lan2";
+	nvmem-cells = <&hw_mac_addr 0>;
+	nvmem-cell-names = "mac-address";
+};
+
+&dp5 {
+	status = "okay";
+	phy-handle = <&qca8075_4>;
+	label = "lan1";
+	nvmem-cells = <&hw_mac_addr 0>;
+	nvmem-cell-names = "mac-address";
+};
+
+&wifi {
+	status = "okay";
+	qcom,ath11k-fw-memory-mode = <1>;
+	qcom,ath11k-calibration-variant = "Linksys-MX4200v2";
+};

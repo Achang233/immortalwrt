@@ -45,13 +45,6 @@
 			default-state = "on";
 		};
 
-		wifi1_green {
-			function = LED_FUNCTION_WLAN_2GHZ;
-			color = <LED_COLOR_ID_GREEN>;
-			gpios = <&gpio 13 GPIO_ACTIVE_LOW>;
-			linux,default-trigger = "phy1tpt";
-		};
-
 		wifi1_amber {
 			function = LED_FUNCTION_WLAN_2GHZ;
 			color = <LED_COLOR_ID_AMBER>;
@@ -200,12 +193,17 @@
 
 	nvmem-cells = <&calibration_wmac>, <&macaddr_uboot_3ff80 1>;
 	nvmem-cell-names = "calibration", "mac-address";
+
+	led {
+		led-sources = <13>;
+		led-active-low;
+	};
 };
 
 &pcie0 {
 	status = "okay";
 
-	wifi@0,0,0 {
+	wifi@0,0 {
 		compatible = "qcom,ath10k";
 		reg = <0x0 0 0 0 0>;
 		nvmem-cells = <&calibration_pcie>, <&macaddr_uboot_3ff80 2>;

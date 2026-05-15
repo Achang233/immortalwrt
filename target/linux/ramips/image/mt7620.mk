@@ -55,7 +55,7 @@ define Device/alfa-network_tube-e4g
   DEVICE_VENDOR := ALFA Network
   DEVICE_MODEL := Tube-E4G
   DEVICE_PACKAGES := kmod-usb2 kmod-usb-ohci uboot-envtools uqmi -iwinfo \
-	-kmod-rt2800-soc -wpad-basic-openssl
+	-kmod-rt2800-soc -wpad-openssl
   SUPPORTED_DEVICES += tube-e4g
 endef
 TARGET_DEVICES += alfa-network_tube-e4g
@@ -1157,10 +1157,12 @@ define Device/rostelecom_rt-fl-1
   $(Device/sercomm_cpj)
   DEVICE_MODEL := RT-FL-1
   DEVICE_ALT0_MODEL := RT-FL-1
+ifeq ($(IB),)
   ARTIFACT/initramfs-factory.img := \
 	append-image-stage initramfs-kernel.bin | check-size | \
 	sercomm-factory-cpj | gzip | sercomm-payload | \
 	sercomm-pid-setbit 0x11 | sercomm-crypto
+endif
 endef
 TARGET_DEVICES += rostelecom_rt-fl-1
 
@@ -1168,9 +1170,11 @@ define Device/rostelecom_s1010
   $(Device/sercomm_cpj)
   DEVICE_MODEL := S1010
   DEVICE_ALT0_MODEL := S1010.RT
+ifeq ($(IB),)
   ARTIFACT/initramfs-factory.img := \
 	append-image-stage initramfs-kernel.bin | check-size | \
 	sercomm-factory-cpj | gzip | sercomm-payload | sercomm-crypto
+endif
 endef
 TARGET_DEVICES += rostelecom_s1010
 

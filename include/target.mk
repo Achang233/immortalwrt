@@ -64,13 +64,8 @@ DEFAULT_PACKAGES.tweak:=\
 	block-mount \
 	default-settings-chn \
 	kmod-nf-nathelper \
-	kmod-nf-nathelper-extra \
-	luci-light \
-	luci-app-cpufreq \
-	luci-app-package-manager \
-	luci-compat \
-	luci-lib-base \
-	luci-lib-ipkg
+	luci \
+	luci-app-cpufreq
 
 ifneq ($(DUMP),)
   all: dumpinfo
@@ -121,13 +116,6 @@ DEFAULT_PACKAGES += $(DEFAULT_PACKAGES.$(DEVICE_TYPE))
 ##
 filter_packages = $(filter-out -% $(patsubst -%,%,$(filter -%,$(1))),$(1))
 
-##@
-# @brief Append extra package dependencies.
-#
-# @param 1: Package list.
-##
-extra_packages = $(if $(filter wpad wpad-% nas,$(1)),iwinfo)
-
 define ProfileDefault
   NAME:=
   PRIORITY:=
@@ -144,7 +132,7 @@ define Profile
 	echo "Target-Profile: $(1)"; \
 	$(if $(PRIORITY), echo "Target-Profile-Priority: $(PRIORITY)"; ) \
 	echo "Target-Profile-Name: $(NAME)"; \
-	echo "Target-Profile-Packages: $(PACKAGES) $(call extra_packages,$(DEFAULT_PACKAGES) $(PACKAGES))"; \
+	echo "Target-Profile-Packages: $(PACKAGES)"; \
 	echo "Target-Profile-Description:"; \
 	echo "$$$$$$$$$(call shvar,Profile/$(1)/Description)"; \
 	echo "@@"; \
@@ -275,20 +263,10 @@ ifeq ($(DUMP),1)
     CPU_CFLAGS_e5500:=-mcpu=e5500
     CPU_CFLAGS_powerpc64:=-mcpu=powerpc64
   endif
-  ifeq ($(ARCH),sparc)
-    CPU_TYPE = sparc
-    CPU_CFLAGS_ultrasparc = -mcpu=ultrasparc
-  endif
   ifeq ($(ARCH),aarch64)
     CPU_TYPE ?= generic
     CPU_CFLAGS_generic = -mcpu=generic
     CPU_CFLAGS_cortex-a53 = -mcpu=cortex-a53
-  endif
-  ifeq ($(ARCH),arc)
-    CPU_TYPE ?= arc700
-    CPU_CFLAGS += -matomic
-    CPU_CFLAGS_arc700 = -mcpu=arc700
-    CPU_CFLAGS_archs = -mcpu=archs
   endif
   ifeq ($(ARCH),riscv64)
     CPU_TYPE ?= generic
@@ -340,6 +318,9 @@ ifeq ($(DUMP),1)
     ifneq ($(CONFIG_PWM),)
       FEATURES += pwm
     endif
+    ifneq ($(CONFIG_REGULATOR),)
+      FEATURES += regulator
+    endif
     ifneq ($(CONFIG_USB)$(CONFIG_USB_SUPPORT),)
       ifneq ($(CONFIG_USB_ARCH_HAS_HCD)$(CONFIG_USB_EHCI_HCD),)
         FEATURES += usb
@@ -382,7 +363,7 @@ endif
 
 define BuildTargets/DumpCurrent
   .PHONY: dumpinfo
-  dumpinfo : export DESCRIPTION=$$(Target/Description)
+  dumpinfo: $(call shexport,Target/Description)
   dumpinfo:
 	@echo 'Target: $(TARGETID)'; \
 	 echo 'Target-Board: $(BOARD)'; \
@@ -399,10 +380,10 @@ define BuildTargets/DumpCurrent
 	 echo 'Linux-Kernel-Arch: $(LINUX_KARCH)'; \
 	$(if $(SUBTARGET),,$(if $(DEFAULT_SUBTARGET), echo 'Default-Subtarget: $(DEFAULT_SUBTARGET)'; )) \
 	 echo 'Target-Description:'; \
-	 echo "$$$$DESCRIPTION"; \
+	 echo "$$$$$(call shvar,Target/Description);"; \
 	 echo '@@'; \
 	 $(if $(DEFAULT_PROFILE),echo 'Target-Default-Profile: $(DEFAULT_PROFILE)';) \
-	 echo 'Default-Packages: $(DEFAULT_PACKAGES) $(call extra_packages,$(DEFAULT_PACKAGES))'; \
+	 echo 'Default-Packages: $(DEFAULT_PACKAGES)'; \
 	 $(DUMPINFO)
 	$(if $(CUR_SUBTARGET),$(SUBMAKE) -r --no-print-directory -C image -s DUMP=1 SUBTARGET=$(CUR_SUBTARGET))
 	$(if $(SUBTARGET),,@$(foreach SUBTARGET,$(SUBTARGETS),$(SUBMAKE) --no-print-directory -s DUMP=1 SUBTARGET=$(SUBTARGET); ))

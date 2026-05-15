@@ -11,7 +11,7 @@ include $(INCLUDE_DIR)/kernel.mk
 
 PKG_NAME:=cryptodev-linux
 PKG_VERSION:=1.14
-PKG_RELEASE:=1
+PKG_RELEASE:=2
 
 PKG_SOURCE_URL:=https://codeload.github.com/$(PKG_NAME)/$(PKG_NAME)/tar.gz/$(PKG_NAME)-$(PKG_VERSION)?
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
@@ -42,7 +42,7 @@ define KernelPackage/cryptodev/description
 endef
 
 ifneq ($(CONFIG_PACKAGE_kmod-qca-nss-crypto),)
-EXTRA_CFLAGS+=-DQCANSS
+  EXTRA_CFLAGS+=-DQCANSS
 endif
 
 define Build/Configure

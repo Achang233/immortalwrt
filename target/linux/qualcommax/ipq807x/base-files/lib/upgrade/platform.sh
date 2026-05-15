@@ -1,7 +1,7 @@
 PART_NAME=firmware
 REQUIRE_IMAGE_METADATA=1
 
-RAMFS_COPY_BIN='fw_printenv fw_setenv head'
+RAMFS_COPY_BIN='fw_printenv fw_setenv head seq'
 RAMFS_COPY_DATA='/etc/fw_env.config /var/lock/fw_printenv.lock'
 
 remove_oem_ubi_volume() {
@@ -57,11 +57,15 @@ platform_do_upgrade() {
 	dynalink,dl-wrx36|\
 	edimax,cax1800|\
 	netgear,rax120v2|\
+	netgear,rbr750|\
+	netgear,rbs750|\
 	netgear,sxr80|\
 	netgear,sxs80|\
 	netgear,wax218|\
 	netgear,wax620|\
-	netgear,wax630)
+	netgear,wax630|\
+	zyxel,nwa110ax|\
+	zyxel,nwa210ax)
 		nand_do_upgrade "$1"
 		;;
 	asus,rt-ax89x)
@@ -98,13 +102,13 @@ platform_do_upgrade() {
 	linksys,mx4200v1|\
 	linksys,mx4200v2|\
 	linksys,mx4300)
-		linksys_mx_pre_upgrade "$1"
+		linksys_pre_upgrade "$1"
 		remove_oem_ubi_volume squashfs
 		nand_do_upgrade "$1"
 		;;
 	linksys,mx5300|\
 	linksys,mx8500)
-		linksys_mx_pre_upgrade "$1"
+		linksys_pre_upgrade "$1"
 		remove_oem_ubi_volume ubifs
 		nand_do_upgrade "$1"
 		;;
@@ -167,9 +171,13 @@ platform_do_upgrade() {
 		CI_DATAPART="rootfs_data"
 		emmc_do_upgrade "$1"
 		;;
+	tcl,linkhub-hh500v)
+		tcl_upgrade_prepare
+		nand_do_upgrade "$1"
+		;;
 	tplink,deco-x80-5g|\
-	tplink,eap620hd-v1|\
-	tplink,eap660hd-v1)
+	tplink,eap620-hd-v1|\
+	tplink,eap660-hd-v1)
 		remove_oem_ubi_volume ubi_rootfs
 		tplink_do_upgrade "$1"
 		;;

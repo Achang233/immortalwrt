@@ -6,12 +6,12 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=secilc
-PKG_VERSION:=3.8.1
+PKG_VERSION:=3.10
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://github.com/SELinuxProject/selinux/releases/download/$(PKG_VERSION)
-PKG_HASH:=3db2974dd9a3c8403ada0392deff267b0398a74b4e7a0b051af76457270848d1
+PKG_HASH:=6658071d6f1044184d3973062a798187537ae1c3ddb4c31afd417df333316c10
 HOST_BUILD_DEPENDS:=libsepol/host
 
 PKG_MAINTAINER:=Dominick Grift <dominick.grift@defensec.nl>
@@ -31,7 +31,7 @@ define Package/secilc
 	SECTION:=utils
 	CATEGORY:=Utilities
 	TITLE:=SELinux Common Intermediate Language (CIL) Compiler
-	URL:=http://selinuxproject.org/page/Main_Page
+	URL:=https://github.com/selinuxproject
 	DEPENDS:=+libsepol
 endef
 

@@ -10,15 +10,15 @@ include $(INCLUDE_DIR)/kernel.mk
 
 PKG_NAME:=mac80211
 
-PKG_VERSION:=6.14.11
+PKG_VERSION:=6.18.26
 PKG_RELEASE:=1
 PKG_LICENSE:=GPL-2.0-only
 PKG_LICENSE_FILES:=COPYING
 
-PKG_SOURCE_URL:=http://mirror2.openwrt.org/sources/
-PKG_HASH:=1f6620485f0b33046e87aa2c6ac04ae529e9b5e83e318652d89939b192c6e348
+PKG_SOURCE_URL:=https://github.com/openwrt/backports/releases/download/backports-v$(PKG_VERSION)
+PKG_HASH:=2ad578c6cae22f192fefd44e1449725228d4109ee781998b41dcbae872554968
 
-PKG_SOURCE:=backports-$(PKG_VERSION).tar.xz
+PKG_SOURCE:=backports-$(PKG_VERSION).tar.zst
 PKG_BUILD_DIR:=$(KERNEL_BUILD_DIR)/$(if $(BUILD_VARIANT),$(PKG_NAME)-$(BUILD_VARIANT)/)backports-$(PKG_VERSION)
 PKG_BUILD_PARALLEL:=1
 
@@ -37,10 +37,9 @@ PKG_CONFIG_DEPENDS:= \
 	CONFIG_PACKAGE_MAC80211_MESH \
 	CONFIG_PACKAGE_MAC80211_TRACING \
 	CONFIG_PACKAGE_MAC80211_NSS_SUPPORT \
-	CONFIG_PACKAGE_MAC80211_NSS_REDIRECT \
 	CONFIG_PACKAGE_IWLWIFI_DEBUG \
 	CONFIG_PACKAGE_IWLWIFI_DEBUGFS \
-	CONFIG_PACKAGE_RTLWIFI_DEBUG
+	CONFIG_PACKAGE_RTLWIFI_DEBUG \
 
 include $(INCLUDE_DIR)/package.mk
 
@@ -138,10 +137,6 @@ define KernelPackage/mac80211
   KCONFIG:=\
 	CONFIG_AVERAGE=y
   FILES:= $(PKG_BUILD_DIR)/net/mac80211/mac80211.ko
-ifdef CONFIG_PACKAGE_MAC80211_NSS_REDIRECT
-  AUTOLOAD:=$(call AutoProbe, mac80211)
-  MODPARAMS.mac80211:=nss_redirect=1
-endif
   ABI_VERSION:=$(PKG_VERSION)-$(PKG_RELEASE)
   MENU:=1
 endef
@@ -155,13 +150,6 @@ define KernelPackage/mac80211/config
 			default y
 			help
 				This option enables support for NSS in QCA boards.
-		config PACKAGE_MAC80211_NSS_REDIRECT
-			bool "Enable autoloading with 'nss_redirect=1' (not needed on ath11k)"
-			depends on PACKAGE_MAC80211_NSS_SUPPORT
-			default n
-			help
-				This option enables autoloading mac80211 with 'nss_redirect=1'.
-				However, it is not required for wifi offloading.
   endif
 
 	config PACKAGE_MAC80211_DEBUGFS
@@ -309,10 +297,6 @@ ifdef CONFIG_ATH11K_NSS_SUPPORT
 	IREMAP_CFLAGS+=-I$(STAGING_DIR)/usr/include/qca-nss-drv -I$(STAGING_DIR)/usr/include/qca-nss-clients
 endif
 
-ifeq ($(CONFIG_NSS_FIRMWARE_VERSION_11_4),y)
-	C_DEFINES+=-DCONFIG_NSS_FIRMWARE_VERSION_11_4
-endif
-
 config-$(CONFIG_PACKAGE_MAC80211_NSS_SUPPORT) += MAC80211_NSS_SUPPORT
 
 MAKE_OPTS:= \
@@ -368,7 +352,6 @@ ifeq ($(strip $(CONFIG_EXTERNAL_KERNEL_TREE)),"")
   ifeq ($(strip $(CONFIG_KERNEL_GIT_CLONE_URI)),"")
     define Build/Configure
 	  cmp $(PKG_BUILD_DIR)/include/linux/ath5k_platform.h $(LINUX_DIR)/include/linux/ath5k_platform.h
-	  cmp $(PKG_BUILD_DIR)/include/linux/rt2x00_platform.h $(LINUX_DIR)/include/linux/rt2x00_platform.h
     endef
   endif
 endif

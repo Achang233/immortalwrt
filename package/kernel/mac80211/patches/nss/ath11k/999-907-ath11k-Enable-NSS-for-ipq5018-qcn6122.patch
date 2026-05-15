@@ -1,6 +1,6 @@
 --- a/drivers/net/wireless/ath/ath11k/core.c
 +++ b/drivers/net/wireless/ath/ath11k/core.c
-@@ -44,6 +44,7 @@ module_param_named(ftm_mode, ath11k_ftm_
+@@ -46,6 +46,7 @@ module_param_named(ftm_mode, ath11k_ftm_
  MODULE_PARM_DESC(ftm_mode, "Boots up in factory test mode");
  
  static const struct ath11k_num_vdevs_peers ath11k_vdevs_peers[];
@@ -8,7 +8,7 @@
  
  static struct ath11k_hw_params ath11k_hw_params[] = {
  	{
-@@ -742,7 +743,7 @@ static struct ath11k_hw_params ath11k_hw
+@@ -744,7 +745,7 @@ static struct ath11k_hw_params ath11k_hw
  		.tx_ring_size = DP_TCL_DATA_RING_SIZE,
  		.smp2p_wow_exit = false,
  		.support_fw_mac_sequence = false,
@@ -16,8 +16,8 @@
 +		.num_vdevs_peers = ath11k_vdevs_peers_ipq5018,
  		.support_dual_stations = false,
  		.pdev_suspend = false,
- 		.reo_status_poll = true,
-@@ -987,8 +988,23 @@ static struct ath11k_hw_params ath11k_hw
+ 	},
+@@ -988,8 +989,23 @@ static struct ath11k_hw_params ath11k_hw
  		.support_off_channel_tx = false,
  		.tcl_ring_retry = true,
  		.tx_ring_size = DP_TCL_DATA_RING_SIZE,
@@ -41,7 +41,7 @@
 +	}
  };
  
- static const struct ath11k_num_vdevs_peers ath11k_vdevs_peers[] = {
+ static const struct dmi_system_id ath11k_pm_quirk_table[] = {
 --- a/drivers/net/wireless/ath/ath11k/hw.c
 +++ b/drivers/net/wireless/ath/ath11k/hw.c
 @@ -1043,6 +1043,7 @@ static void ath11k_hw_wcn6855_reo_setup(
@@ -81,7 +81,7 @@
  	ath11k_hif_write32(ab, reo_base + HAL_REO1_DEST_RING_CTRL_IX_1,
 --- a/drivers/net/wireless/ath/ath11k/nss.c
 +++ b/drivers/net/wireless/ath/ath11k/nss.c
-@@ -4253,6 +4253,8 @@ static int ath11k_nss_get_target_type(st
+@@ -4252,6 +4252,8 @@ static int ath11k_nss_get_target_type(st
  		return ATH11K_WIFILI_TARGET_TYPE_QCN9074;
  	case ATH11K_HW_IPQ5018_HW10:
  		return ATH11K_WIFILI_TARGET_TYPE_QCA5018;
@@ -90,7 +90,7 @@
  	default:
  		ath11k_warn(ab, "NSS Offload not supported for this HW\n");
  		return ATH11K_WIFILI_TARGET_TYPE_UNKNOWN;
-@@ -4267,6 +4269,7 @@ static int ath11k_nss_get_interface_type
+@@ -4266,6 +4268,7 @@ static int ath11k_nss_get_interface_type
  	case ATH11K_HW_IPQ5018_HW10:
  		return NSS_WIFILI_INTERNAL_INTERFACE;
  	case ATH11K_HW_QCN9074_HW10:

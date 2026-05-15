@@ -12,9 +12,9 @@ PKG_RELEASE:=1
 
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_URL=https://github.com/jow-/ucode.git
-PKG_SOURCE_DATE:=2025-07-18
-PKG_SOURCE_VERSION:=3f64c8089bf3ea4847c96b91df09fbfcaec19e1d
-PKG_MIRROR_HASH:=55fbff7c527e1fadbda2e038636f39419649841ee63a5f3cdb50b9714b13420c
+PKG_SOURCE_DATE:=2026-04-24
+PKG_SOURCE_VERSION:=0beaa9dc244f16c52c0a7dc3f180cca0539124cd
+PKG_MIRROR_HASH:=9a58c061541cd98d248335c351a10049823a0dd317475fa0be73593c6d90a70a
 PKG_MAINTAINER:=Jo-Philipp Wich <jo@mein.io>
 PKG_LICENSE:=ISC
 
@@ -53,6 +53,7 @@ CMAKE_HOST_OPTIONS += \
 	-DULOOP_SUPPORT=OFF \
 	-DDEBUG_SUPPORT=ON \
 	-DLOG_SUPPORT=OFF \
+	-DZLIB_SUPPORT=ON \
 	-DDIGEST_SUPPORT=OFF
 
 
@@ -183,6 +184,14 @@ $(eval $(call UcodeModule, \
 $(eval $(call UcodeModule, \
 	digest, DIGEST_SUPPORT, , \
 	The digest module allows ucode scripts to use libmd digests.))
+
+$(eval $(call UcodeModule, \
+	io, IO_SUPPORT, , \
+	The io module allows direct file descriptor read/write (including non-blocking).))
+
+$(eval $(call UcodeModule, \
+	zlib, ZLIB_SUPPORT, +zlib, \
+	The zlib module allows ucode scripts to de/compress gzip and zlib formats.))
 
 $(eval $(call BuildPackage,libucode))
 $(eval $(call BuildPackage,ucode))

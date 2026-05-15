@@ -8,14 +8,14 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=dropbear
-PKG_VERSION:=2025.88
-PKG_RELEASE:=2
+PKG_VERSION:=2025.89
+PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.bz2
 PKG_SOURCE_URL:= \
 	https://matt.ucc.asn.au/dropbear/releases/ \
 	https://dropbear.nl/mirror/releases/
-PKG_HASH:=783f50ea27b17c16da89578fafdb6decfa44bb8f6590e5698a4e4d3672dc53d4
+PKG_HASH:=0d1f7ca711cfc336dc8a85e672cab9cfd8223a02fe2da0a4a7aeb58c9e113634
 
 PKG_LICENSE:=MIT
 PKG_LICENSE_FILES:=LICENSE libtomcrypt/LICENSE libtommath/LICENSE
@@ -62,7 +62,7 @@ define Package/dropbear
   CATEGORY:=Base system
   TITLE:=Small SSH2 client/server
   MENU:=1
-  DEPENDS:= +USE_GLIBC:libcrypt-compat +DROPBEAR_ZLIB:zlib
+  DEPENDS:= +USE_GLIBC:libcrypt-compat +DROPBEAR_ZLIB:zlib +@BUSYBOX_CONFIG_PIDOF
   ALTERNATIVES:=100:/usr/bin/ssh-keygen:/usr/sbin/dropbear
   $(if $(CONFIG_DROPBEAR_SCP),ALTERNATIVES+= \
 	  100:/usr/bin/scp:/usr/sbin/dropbear,)
@@ -138,9 +138,9 @@ DB_OPT_COMMON = \
 	MAX_UNAUTH_PER_IP,$(CONFIG_DROPBEAR_MAX_UNAUTH_PER_IP) \
 	UNAUTH_CLOSE_DELAY,$(CONFIG_DROPBEAR_UNAUTH_CLOSE_DELAY) \
 	$(if $(CONFIG_DROPBEAR_RSA),DROPBEAR_DEFAULT_RSA_SIZE$(comma)$(CONFIG_DROPBEAR_DEFAULT_RSA_SIZE)) \
-	$(if $(CONFIG_DROPBEAR_LASTLOG),LASTLOG_FILE$(comma)$(CONFIG_DROPBEAR_LASTLOG_FILE)) \
-	$(if $(CONFIG_DROPBEAR_UTMP),UTMP_FILE$(comma)$(CONFIG_DROPBEAR_UTMP_FILE)) \
-	$(if $(CONFIG_DROPBEAR_WTMP),WTMP_FILE$(comma)$(CONFIG_DROPBEAR_WTMP_FILE)) \
+	$(if $(CONFIG_DROPBEAR_LASTLOG),LASTLOG_FILE$(comma)$(CONFIG_DROPBEAR_LASTLOG_PATH)) \
+	$(if $(CONFIG_DROPBEAR_UTMP),UTMP_FILE$(comma)$(CONFIG_DROPBEAR_UTMP_PATH)) \
+	$(if $(CONFIG_DROPBEAR_WTMP),WTMP_FILE$(comma)$(CONFIG_DROPBEAR_WTMP_PATH)) \
 
 
 ##############################################################################

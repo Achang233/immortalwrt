@@ -45,7 +45,7 @@ define Package/base-files
 	+SELINUX:procd-selinux +!SELINUX:procd +USE_SECCOMP:procd-seccomp \
 	+SELINUX:busybox-selinux +!SELINUX:busybox
   TITLE:=Base filesystem for OpenWrt
-  URL:=http://openwrt.org/
+  URL:=https://openwrt.org/
   VERSION:=$(PKG_RELEASE)~$(lastword $(subst -, ,$(REVISION)))
 endef
 
@@ -53,7 +53,6 @@ define Package/base-files/conffiles
 /etc/config/
 /etc/config/network
 /etc/config/system
-/etc/dropbear/
 /etc/ethers
 /etc/group
 /etc/hosts
@@ -256,7 +255,7 @@ ifneq ($(CONFIG_USE_APK),)
 
 	rm -f $(1)/etc/uci-defaults/13_fix-group-user
 	rm -f $(1)/sbin/pkg_check
-	echo $(PKG_RELEASE)~$(lastword $(subst -, ,$(REVISION))) >$(TMP_DIR)/base-files.version
+	echo $(PKG_RELEASE)~$(lastword $(subst -, ,$(REVISION))) >$(STAGING_DIR)/base-files.version
 else
 	$(if $(CONFIG_CLEAN_IPKG),, \
 		mkdir -p $(1)/etc/opkg; \

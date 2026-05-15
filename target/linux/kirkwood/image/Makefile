@@ -97,11 +97,9 @@ define Device/kernel-size-migration-linksys
     2. Run folowing commands in console (ssh or serial): \n$\
     \t fw_printenv \n$\
     \t fw_setenv nandboot \
-    "$$$$(fw_printenv nandboot | awk -F= '{sub(/^nandboot=/, "");print}' \
-    | sed 's/0x300000/0x400000/g')"\n$\
+    "$$$$(fw_printenv -n nandboot | sed 's/0x300000/0x400000/g')"\n$\
     \t fw_setenv altnandboot \
-    "$$$$(fw_printenv altnandboot | awk -F= '{sub(/^altnandboot=/, "");print}' \
-    | sed 's/0x300000/0x400000/g')"\n$\
+    "$$$$(fw_printenv -n altnandboot | sed 's/0x300000/0x400000/g')"\n$\
     3. Test if envs are ok by 'fw_printenv'. \
     It should be the same except last argument of\
     'nand read.e' in 'nandboot' and 'altnandboot'.\n$\
@@ -188,6 +186,18 @@ define Device/dlink_dns320l
 	kmod-usb-storage kmod-usb-ledtrig-usbport dns320l-mcu kmod-rtc-mv
 endef
 TARGET_DEVICES += dlink_dns320l
+
+define Device/dlink_dns-325-a1
+  DEVICE_VENDOR := D-Link
+  DEVICE_MODEL := DNS-325
+  DEVICE_VARIANT := A1
+  DEVICE_DTS := kirkwood-dns325
+  DEVICE_PACKAGES := kmod-ata-marvell-sata kmod-hwmon-lm75 kmod-hwmon-gpiofan \
+	kmod-thermal kmod-usb-ledtrig-usbport kmod-gpio-button-hotplug block-mount \
+  mdadm kmod-md-linear kmod-usb-storage kmod-fs-ext4 e2fsprogs partx-utils \
+  fdisk kmod-rtc-mv
+endef
+TARGET_DEVICES += dlink_dns-325-a1
 
 define Device/endian_4i-edge-200
   DEVICE_VENDOR := Endian
